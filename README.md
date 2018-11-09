@@ -1,5 +1,6 @@
 # Table2Excel.js
 
+在Table2Excel.js基础上进行了修改，以便能够传人一个类似table的非DOM对象后，在 Web Worker 中处理Excel，加快导出excel的速度。
 This is a library to export html tables to excel sheets.
 
 ## Precondition
@@ -66,8 +67,32 @@ node: { fs: 'empty' }
 ## Basic Usage
 
 ```js
-const table2Excel = new Table2Excel(selector, options)  // new Table2Excel('table')
-table2Excel.export(fileName, extension) // table2Excel.export('my-exported-table', 'xlsx')
+var tables = [{
+  rows: [ // 行数组
+    {
+      cells: [ // 行内单元格数组
+        {
+          innerText: "XXXX", // 单元格内容 or value: "XXXX"
+          colSpan: 1, // 跨列
+          rowSpan: 1, // 跨行
+          ... // 其他自定义参数
+        },
+        {
+          innerText: "XXXX", // 单元格内容 or value: "XXXX"
+          colSpan: 1, // 跨列
+          rowSpan: 1, // 跨行
+          ... // 其他自定义参数
+        },
+        ....
+      ]
+    },
+    ...
+  ]
+}];
+const table2Excel = new Table2Excel(tables, options) 
+table2Excel.export(function(blob){
+  saveAs(blob, filename, extension);
+}, extension) 
 ```
 
 `extension` can be `'xls'` or `'xlsx'`, default as `'xlsx'`
