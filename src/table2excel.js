@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs/dist/es5/exceljs.browser'
-import { mergeCells, saveAsExcel } from './utils'
-import { WIDTH_RATIO } from './constants'
+import { mergeCells, saveAsBlob } from './utils'
+import { WIDTH_RATIO, MIME_TYPES } from './constants'
 import plugins from './plugins'
 
 const PLUGIN_FUNCS = ['workbookCreated', 'worksheetCreated', 'worksheetCompleted', 'workcellCreated']
@@ -100,16 +100,17 @@ export default class Table2Excel {
 
     // mark matrix
     let cursor = 0
-
+    
     for (let r = 0; r < totalRows; r++) {
       for (let c = 0; c < totalCols; c++) {
         // skip if current matrix unit is already assigned
         if (helperMatrix[r][c].cell) {
           continue
         }
-
+        
         // assign cell to current matrix unit
         const cell = cells[cursor++]
+        
         const { rowSpan, colSpan } = cell.el
 
         cell.rowRange = { from: r, to: r }
@@ -125,25 +126,25 @@ export default class Table2Excel {
       }
     }
 
-
     // read matrix to sheet
     cells.forEach(cell => {
       const { rowRange, colRange, el } = cell
-      const { innerText } = el
+      const { innerText, value } = el
       const workcell = mergeCells(worksheet, colRange.from, rowRange.from, colRange.to, rowRange.to)
-      const cellStyle = getComputedStyle(el)
+      const cellStyle = (typeof(Element) !== 'undefined' && window && el instanceof Element) ? getComputedStyle(el) : null
 
-      workcell.value = innerText
+      workcell.value = innerText ? innerText : (value ? value : '');
 
       // workcellCreated
       this._invokePlugin('workcellCreated', { workcell, cell: el, rowRange, colRange, cellStyle })
     })
   }
-
-  export (fileName, ext) {
-    if (!this.workbook) {
-      this.toExcel()
-    }
-    saveAsExcel(this.workbook, fileName, ext)
+  
+  export (callback, ext) {
+	  if (!this.workbook) {
+	      this.toExcel()
+	  }
+	  return saveAsBlob(this.workbook, callback, ext);
   }
+
 }

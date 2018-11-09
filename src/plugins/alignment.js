@@ -37,7 +37,7 @@ const getVerticalAlign = (value = '') => {
 
 export default {
   workcellCreated ({ workcell, cellStyle }) {
-    const { verticalAlign, textAlign } = cellStyle
+	const { verticalAlign, textAlign } = cellStyle ? cellStyle : {verticalAlign: 'middle', textAlign: 'left'};
     workcell.alignment = {
       ...(workcell.alignment || {}),
       ...({

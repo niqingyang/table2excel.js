@@ -1,7 +1,23 @@
 import { MIME_TYPES } from './constants'
-import { saveAs } from 'file-saver'
+// import { saveAs } from 'file-saver'
 
-export const saveAsExcel = (workbook, filename = 'table', ext = 'xlsx') => {
+//export const saveAsExcel = (workbook, filename = 'table', ext = 'xlsx') => {
+//	const type = MIME_TYPES[ext]
+//
+//	if (!type) {
+//		console.error(`${ext} file extension is not supported`)
+//		return
+//	}
+//
+//	workbook.xlsx.writeBuffer().then(uint8 => {
+//		saveAs(
+//	      new Blob([uint8.buffer], { type }),
+//	      `${filename}.${ext}`
+//	    )
+//	})
+//}
+
+export const saveAsBlob = (workbook, callback, ext = 'xlsx') => {
 	const type = MIME_TYPES[ext]
 
 	if (!type) {
@@ -10,10 +26,7 @@ export const saveAsExcel = (workbook, filename = 'table', ext = 'xlsx') => {
 	}
 
 	workbook.xlsx.writeBuffer().then(uint8 => {
-		saveAs(
-      new Blob([uint8.buffer], { type }),
-      `${filename}.${ext}`
-    )
+		callback.call(this, new Blob([uint8.buffer], { type }));
 	})
 }
 
@@ -64,6 +77,9 @@ export const mergeCells = (sheet, x1, y1, x2, y2) => {
  * convert rgb(0,0,0) rgba(0,0,0,0) to argb: FF00FF00
  */
 export const argb = color => {
+	
+	color = color ? color : 'rgb(0,0,0)';
+	
 	const values = color
 		.split('(')[1].split(')')[0].split(',')
 		.map((v, i) => i === 3 ? v * 255 : v)
