@@ -2,7 +2,7 @@
 
 在Table2Excel.js基础上进行了修改，以便能够传人一个类似table的非DOM对象后，在 Web Worker 中处理Excel，加快导出excel的速度。
 
-![](https://raw.githubusercontent.com/niqingyang/table2excel.js/blob/master/images/table2excel.gif?raw=true)
+![](https://raw.githubusercontent.com/niqingyang/table2excel.js/master/images/table2excel.gif?raw=true)
 
 This is a library to export html tables to excel sheets.
 
